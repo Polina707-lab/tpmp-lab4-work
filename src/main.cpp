@@ -1,6 +1,13 @@
+#include "database.h"
 #include <iostream>
 
 int main() {
-    std::cout << "Tourist Bureau project initialized.\n";
+    Database db;
+
+    if (db.open("data/test.db")) {
+        std::cout << "DB opened\n";
+    }
+
+    db.close();
     return 0;
 }
