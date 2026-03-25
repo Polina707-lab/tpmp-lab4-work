@@ -14,6 +14,8 @@ include_directories(includes)
 add_executable(app
     src/main.cpp
     src/database.cpp
+    src/auth.cpp
+    src/report_service.cpp
 )
 
 target_link_libraries(app SQLite::SQLite3)
