@@ -3,17 +3,21 @@
 #include "route_service.h"
 #include <sqlite3.h>
 #include <string>
+#include <cstdio>
 
 class RouteServiceTest : public ::testing::Test {
 protected:
     Database db;
 
     void SetUp() override {
-        ASSERT_TRUE(db.open("data/tourist_bureau.db"));
+        std::remove(TEST_DB_PATH);
+        ASSERT_TRUE(db.open(TEST_DB_PATH));
+        ASSERT_TRUE(db.executeScriptFromFile(INIT_SQL_PATH));
     }
 
     void TearDown() override {
         db.close();
+        std::remove(TEST_DB_PATH);
     }
 
     int getRouteCount() {
@@ -41,8 +45,13 @@ TEST_F(RouteServiceTest, AddRouteSuccess) {
 
     int after = getRouteCount();
     EXPECT_EQ(after, before + 1);
+}
 
-    db.execute("DELETE FROM routes WHERE route_name = 'Тестовый маршрут';");
+TEST_F(RouteServiceTest, AddRouteFailsWithDuplicateName) {
+    RouteService service(db);
+
+    bool result = service.addRoute("Золотое кольцо", "Новый пункт", "Другой пункт", 123.0);
+    EXPECT_FALSE(result);
 }
 
 TEST_F(RouteServiceTest, UpdateRouteSuccess) {
@@ -64,8 +73,13 @@ TEST_F(RouteServiceTest, UpdateRouteSuccess) {
 
     bool result = service.updateRoute(routeId, "Обновленный маршрут", "C", "D", 75.0);
     EXPECT_TRUE(result);
+}
 
-    db.execute("DELETE FROM routes WHERE route_id = " + std::to_string(routeId) + ";");
+TEST_F(RouteServiceTest, UpdateRouteFailsForInvalidId) {
+    RouteService service(db);
+
+    bool result = service.updateRoute(9999, "Несуществующий маршрут", "A", "B", 10.0);
+    EXPECT_FALSE(result);
 }
 
 TEST_F(RouteServiceTest, DeleteRouteSuccess) {
@@ -86,4 +100,10 @@ TEST_F(RouteServiceTest, DeleteRouteSuccess) {
     ASSERT_NE(routeId, -1);
 
     EXPECT_TRUE(service.deleteRoute(routeId));
+}
+
+TEST_F(RouteServiceTest, DeleteRouteFailsForInvalidId) {
+    RouteService service(db);
+
+    EXPECT_FALSE(service.deleteRoute(9999));
 }
