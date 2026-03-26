@@ -17,6 +17,13 @@ add_executable(runTests
     ../src/route_service.cpp
 )
 
+target_compile_definitions(runTests PRIVATE
+    TEST_DB_PATH="${CMAKE_SOURCE_DIR}/data/test.db"
+    INIT_SQL_PATH="${CMAKE_SOURCE_DIR}/sql/init.sql"
+    TEST_BLOB_PATH="${CMAKE_SOURCE_DIR}/data/test_blob.bin"
+    TEST_EXPORT_BLOB_PATH="${CMAKE_SOURCE_DIR}/data/exported_test_blob.bin"
+)
+
 target_link_libraries(runTests
     GTest::GTest
     GTest::Main

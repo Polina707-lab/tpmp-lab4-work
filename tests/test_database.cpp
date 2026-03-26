@@ -7,12 +7,13 @@ protected:
     Database db;
 
     void SetUp() override {
-        ASSERT_TRUE(db.open("data/test.db"));
+        std::remove(TEST_DB_PATH);
+        ASSERT_TRUE(db.open(TEST_DB_PATH));
     }
 
     void TearDown() override {
         db.close();
-        std::remove("data/test.db");
+        std::remove(TEST_DB_PATH);
     }
 };
 
@@ -25,7 +26,7 @@ TEST_F(DatabaseTest, ExecuteValidSqlWorks) {
 }
 
 TEST_F(DatabaseTest, IsInitializedReturnsTrueAfterInitScript) {
-    ASSERT_TRUE(db.executeScriptFromFile("sql/init.sql"));
+    ASSERT_TRUE(db.executeScriptFromFile(INIT_SQL_PATH));
     EXPECT_TRUE(db.isInitialized());
 }
 
@@ -34,5 +35,5 @@ TEST_F(DatabaseTest, ExecuteInvalidSqlFails) {
 }
 
 TEST_F(DatabaseTest, ExecuteScriptFromFileWorks) {
-    EXPECT_TRUE(db.executeScriptFromFile("sql/init.sql"));
+    EXPECT_TRUE(db.executeScriptFromFile(INIT_SQL_PATH));
 }

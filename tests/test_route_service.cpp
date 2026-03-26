@@ -10,13 +10,14 @@ protected:
     Database db;
 
     void SetUp() override {
-        ASSERT_TRUE(db.open("data/test.db"));
-        ASSERT_TRUE(db.executeScriptFromFile("sql/init.sql"));
+        std::remove(TEST_DB_PATH);
+        ASSERT_TRUE(db.open(TEST_DB_PATH));
+        ASSERT_TRUE(db.executeScriptFromFile(INIT_SQL_PATH));
     }
 
     void TearDown() override {
         db.close();
-        std::remove("data/test.db");
+        std::remove(TEST_DB_PATH);
     }
 
     int getRouteCount() {

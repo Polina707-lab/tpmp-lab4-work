@@ -11,15 +11,19 @@ protected:
     Database db;
 
     void SetUp() override {
-        ASSERT_TRUE(db.open("data/test.db"));
-        ASSERT_TRUE(db.executeScriptFromFile("sql/init.sql"));
+        std::remove(TEST_DB_PATH);
+        std::remove(TEST_BLOB_PATH);
+        std::remove(TEST_EXPORT_BLOB_PATH);
+
+        ASSERT_TRUE(db.open(TEST_DB_PATH));
+        ASSERT_TRUE(db.executeScriptFromFile(INIT_SQL_PATH));
     }
 
     void TearDown() override {
         db.close();
-        std::remove("data/test.db");
-        std::remove("data/test_blob.bin");
-        std::remove("data/exported_test_blob.bin");
+        std::remove(TEST_DB_PATH);
+        std::remove(TEST_BLOB_PATH);
+        std::remove(TEST_EXPORT_BLOB_PATH);
     }
 };
 
@@ -85,7 +89,7 @@ TEST_F(ReportServiceTest, CalculateCrewPaymentsCreatesThreeRows) {
 TEST_F(ReportServiceTest, SaveBusImageFromFileWorks) {
     ReportService report(db);
 
-    const std::string testFile = "data/test_blob.bin";
+    const std::string testFile = TEST_BLOB_PATH;
 
     {
         std::ofstream out(testFile, std::ios::binary);
@@ -112,8 +116,8 @@ TEST_F(ReportServiceTest, SaveBusImageFromFileWorks) {
 TEST_F(ReportServiceTest, ExportBusImageToFileWorks) {
     ReportService report(db);
 
-    const std::string inputFile = "data/test_blob.bin";
-    const std::string outputFile = "data/exported_test_blob.bin";
+    const std::string inputFile = TEST_BLOB_PATH;
+    const std::string outputFile = TEST_EXPORT_BLOB_PATH;
 
     {
         std::ofstream out(inputFile, std::ios::binary);
