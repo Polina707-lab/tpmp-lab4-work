@@ -4,7 +4,6 @@ project(TouristBureau)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# куда складывать бинарник
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 find_package(SQLite3 REQUIRED)
@@ -15,7 +14,17 @@ add_executable(app
     src/main.cpp
     src/database.cpp
     src/auth.cpp
+    src/trip_service.cpp
     src/report_service.cpp
+    src/bus_service.cpp
+    src/route_service.cpp
+    src/menu.cpp
 )
 
 target_link_libraries(app SQLite::SQLite3)
+
+option(BUILD_TESTS "Build tests" ON)
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
