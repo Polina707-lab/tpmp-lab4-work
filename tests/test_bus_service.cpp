@@ -3,17 +3,20 @@
 #include "bus_service.h"
 #include <sqlite3.h>
 #include <string>
+#include <cstdio>
 
 class BusServiceTest : public ::testing::Test {
 protected:
     Database db;
 
     void SetUp() override {
-        ASSERT_TRUE(db.open("data/tourist_bureau.db"));
+        ASSERT_TRUE(db.open("data/test.db"));
+        ASSERT_TRUE(db.executeScriptFromFile("sql/init.sql"));
     }
 
     void TearDown() override {
         db.close();
+        std::remove("data/test.db");
     }
 
     int getBusCount() {
@@ -41,8 +44,13 @@ TEST_F(BusServiceTest, AddBusSuccess) {
 
     int after = getBusCount();
     EXPECT_EQ(after, before + 1);
+}
 
-    db.execute("DELETE FROM buses WHERE bus_number = 'T999';");
+TEST_F(BusServiceTest, AddBusFailsWithDuplicateNumber) {
+    BusService service(db);
+
+    bool result = service.addBus("A101", "Duplicate Bus", 1000.0);
+    EXPECT_FALSE(result);
 }
 
 TEST_F(BusServiceTest, UpdateBusSuccess) {
@@ -64,8 +72,13 @@ TEST_F(BusServiceTest, UpdateBusSuccess) {
 
     bool result = service.updateBus(busId, "T998", "Updated Bus", 2000.0);
     EXPECT_TRUE(result);
+}
 
-    db.execute("DELETE FROM buses WHERE bus_id = " + std::to_string(busId) + ";");
+TEST_F(BusServiceTest, UpdateBusFailsForInvalidId) {
+    BusService service(db);
+
+    bool result = service.updateBus(9999, "X", "Invalid", 100.0);
+    EXPECT_FALSE(result);
 }
 
 TEST_F(BusServiceTest, DeleteBusSuccess) {
@@ -86,4 +99,30 @@ TEST_F(BusServiceTest, DeleteBusSuccess) {
     ASSERT_NE(busId, -1);
 
     EXPECT_TRUE(service.deleteBus(busId));
+}
+
+TEST_F(BusServiceTest, DeleteBusFailsForInvalidId) {
+    BusService service(db);
+
+    EXPECT_FALSE(service.deleteBus(9999));
+}
+
+TEST_F(BusServiceTest, AddBusStoresCorrectData) {
+    BusService service(db);
+
+    ASSERT_TRUE(service.addBus("T996", "Check Bus", 7777.0));
+
+    const char* sql = "SELECT bus_name, total_mileage_km FROM buses WHERE bus_number = 'T996';";
+    sqlite3_stmt* stmt = nullptr;
+    sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nullptr);
+
+    ASSERT_EQ(sqlite3_step(stmt), SQLITE_ROW);
+
+    std::string name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+    double mileage = sqlite3_column_double(stmt, 1);
+
+    sqlite3_finalize(stmt);
+
+    EXPECT_EQ(name, "Check Bus");
+    EXPECT_EQ(mileage, 7777.0);
 }
