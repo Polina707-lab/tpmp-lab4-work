@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Туристическое бюро — Проект</title>
+    <title>Туристическое бюро — Home</title>
 
     <style>
         body {
@@ -68,6 +68,11 @@
             color: #1d4ed8;
         }
 
+        .nav-grid a.active {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
         .container {
             background: #ffffff;
             padding: 32px;
@@ -99,6 +104,62 @@
 
         li {
             margin-bottom: 8px;
+        }
+
+        .docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.doc-card {
+    display: block;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 18px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.doc-card h3 {
+    margin: 0 0 8px 0;
+    color: #1e3a8a;
+    font-size: 18px;
+}
+
+.doc-card p {
+    margin: 0;
+    color: #374151;
+    font-size: 14px;
+}
+
+.doc-card:hover {
+    background: #eff6ff;
+    border-color: #2563eb;
+    transform: translateY(-2px);
+}
+
+        .link-list {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .link-list li {
+            margin-bottom: 10px;
+        }
+
+        .link-list a,
+        .text-link {
+            color: #1d4ed8;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .link-list a:hover,
+        .text-link:hover {
+            text-decoration: underline;
         }
 
         table {
@@ -180,8 +241,7 @@
 
 <nav>
     <div class="nav-grid">
-        <a href="index.html">Главная</a>
-        <a href="individual.html">Индивидуальный проект</a>
+        <a href="index.html" class="active">Главная</a>
         <a href="glossary.html">Глоссарий</a>
         <a href="functional.html">Функциональные требования</a>
         <a href="specification.html">Спецификация</a>
@@ -196,33 +256,96 @@
 <div class="container">
 
     <section>
-        <h2>О проекте</h2>
+    <h2>Описание проекта</h2>
+
+    <div class="note">
+        Система «Туристическое бюро» — это консольное приложение на языке C++,
+        предназначенное для управления экскурсионными маршрутами, автобусами и экипажами.
+
+        Приложение позволяет хранить данные о рейсах, рассчитывать статистику
+        и формировать отчёты по выполненным поездкам.
+
+        Также реализована аутентификация пользователей и разграничение доступа.
+
+        На сайте представлены основные материалы командного проекта: требования,
+        спецификации, схема базы данных, презентация и ссылка на репозиторий с кодом.
+    </div>
+</section>
+
+    <section>
+    <h2>Структура документации</h2>
+
+    <div class="docs-grid">
+
+        <a href="glossary.html" class="doc-card">
+            <h3>Глоссарий</h3>
+            <p>Основные термины предметной области</p>
+        </a>
+
+        <a href="functional.html" class="doc-card">
+            <h3>Функциональные требования</h3>
+            <p>Use case диаграммы и текстовые сценарии</p>
+        </a>
+
+        <a href="specification.html" class="doc-card">
+            <h3>Спецификация проекта</h3>
+            <p>Диаграммы классов, деятельности, последовательности, компонентов</p>
+        </a>
+
+        <a href="additional.html" class="doc-card">
+            <h3>Доп. спецификация</h3>
+            <p>Нефункциональные требования</p>
+        </a>
+
+        <a href="database.html" class="doc-card">
+            <h3>Схема базы данных</h3>
+            <p>ER-диаграмма и SQL-скрипт</p>
+        </a>
+
+        <a href="presentation.html" class="doc-card">
+            <h3>Презентация проекта</h3>
+            <p>Материалы по проекту и команде</p>
+        </a>
+
+        <a href="repository.html" class="doc-card">
+            <h3>Репозиторий проекта</h3>
+            <p>Ссылка на второй репозиторий с кодом</p>
+        </a>
+
+        <a href="training.html" class="doc-card">
+            <h3>Учебные репозитории</h3>
+            <p>Репозитории по курсу GitHub Pages</p>
+        </a>
+
+    </div>
+</section>
+
+    <section>
+        <h2>Ссылки</h2>
         <p>
-            Проект «Туристическое бюро» представляет собой консольное приложение на языке C++,
-            предназначенное для автоматизации учёта экскурсионных маршрутов, автобусов, экипажей и выполненных рейсов.
-        </p>
-        <p>
-            Приложение поддерживает аутентификацию пользователей, работу с базой данных SQLite,
-            выполнение CRUD-операций и формирование отчётов.
+            <strong>Репозиторий с кодом:</strong>
+            <a class="text-link" href="https://github.com/Polina707-lab/tpmp-lab4-work" target="_blank">
+                github.com/Polina707-lab/tpmp-lab4-work
+            </a>
         </p>
 
-        <h3>Основные возможности</h3>
-        <ul>
-            <li>учёт экскурсионных маршрутов;</li>
-            <li>учёт автобусов и экипажей;</li>
-            <li>хранение сведений о выполненных рейсах;</li>
-            <li>формирование отчётов и аналитики;</li>
-            <li>разграничение доступа пользователей.</li>
-        </ul>
+        <p>
+            <strong>Доска проекта в Trello:</strong>
+            <a class="text-link" href="https://trello.com/b/XD0kSFX8/tourist-bureau-project-lab-4" target="_blank">
+                открыть Kanban-доску
+            </a>
+        </p>
 
-        <div class="note">
-            На сайте представлены основные разделы проекта: документация, спецификации,
-            схема базы данных, презентация, репозиторий и учебные репозитории участников.
-        </div>
+        <p>
+            <strong>Wiki первого репозитория:</strong>
+            <a class="text-link" href="https://github.com/fpmi-tpmp2026/tpmp-gr11a-lab4-shamruk-scheglov-team/wiki" target="_blank">
+                перейти к полной документации
+            </a>
+        </p>
     </section>
 
     <section>
-        <h2>Команда проекта</h2>
+        <h2>Участники команды</h2>
         <table>
             <tr>
                 <th>ФИО</th>
