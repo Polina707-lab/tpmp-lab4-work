@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Схема базы данных — Туристическое бюро</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: #ffffff;
+            padding: 36px 40px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.18);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+
+        nav {
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        .nav-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-grid a {
+            text-decoration: none;
+            color: #1e3a8a;
+            background: #eff6ff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .nav-grid a:hover {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .nav-grid a.active {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #111827;
+        }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #1e3a8a;
+        }
+
+        p {
+            margin-bottom: 14px;
+        }
+
+        ul {
+            padding-left: 22px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        code {
+            background: #f3f4f6;
+            color: #1f2937;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .note {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            color: #1e3a8a;
+        }
+
+        .db-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        .schema-image {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 18px auto;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            background: #ffffff;
+        }
+
+        .link-button {
+            display: inline-block;
+            text-decoration: none;
+            color: #ffffff;
+            background: #2563eb;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .link-button:hover {
+            background: #1d4ed8;
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 14px;
+            }
+
+            header {
+                padding: 28px 24px;
+            }
+
+            header h1 {
+                font-size: 30px;
+            }
+
+            .container {
+                padding: 24px;
+            }
+
+            .nav-grid a {
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Схема базы данных</h1>
+</header>
+
+<nav>
+    <div class="nav-grid">
+        <a href="index.html">Главная</a>
+        <a href="glossary.html">Глоссарий</a>
+        <a href="functional.html">Функциональные требования</a>
+        <a href="specification.html">Спецификация</a>
+        <a href="additional.html">Доп. спецификация</a>
+        <a href="database.html" class="active">Схема БД</a>
+        <a href="presentation.html">Презентация</a>
+        <a href="repository.html">Репозиторий</a>
+        <a href="training.html">Учебные репозитории</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="note">
+        База данных системы «Туристическое бюро» предназначена для хранения информации
+        о маршрутах, автобусах, экипажах, членах экипажей, выполненных рейсах и начислениях экипажам.
+        Для обеспечения целостности данных используются первичные и внешние ключи,
+        ограничения и триггеры.
+    </div>
+
+    <section class="db-card">
+        <h2>Основные таблицы</h2>
+
+        <h3>Route</h3>
+        <p>Хранит сведения об экскурсионных маршрутах.</p>
+        <ul>
+            <li><code>route_id</code> — идентификатор маршрута</li>
+            <li><code>route_name</code> — название маршрута</li>
+            <li><code>start_point</code> — начальный пункт</li>
+            <li><code>end_point</code> — конечный пункт</li>
+            <li><code>distance_km</code> — протяженность маршрута</li>
+        </ul>
+
+        <h3>Bus</h3>
+        <p>Хранит сведения об автобусах.</p>
+        <ul>
+            <li><code>bus_id</code> — идентификатор автобуса</li>
+            <li><code>bus_number</code> — номер автобуса</li>
+            <li><code>bus_name</code> — название автобуса</li>
+            <li><code>total_mileage_km</code> — общий пробег автобуса</li>
+        </ul>
+
+        <h3>Crew</h3>
+        <p>Хранит сведения об экипажах.</p>
+        <ul>
+            <li><code>crew_id</code> — идентификатор экипажа</li>
+            <li><code>bus_id</code> — идентификатор автобуса, за которым закреплен экипаж</li>
+        </ul>
+
+        <h3>CrewMember</h3>
+        <p>Хранит сведения о членах экипажа.</p>
+        <ul>
+            <li><code>member_id</code> — идентификатор члена экипажа</li>
+            <li><code>surname</code> — фамилия</li>
+            <li><code>personnel_number</code> — табельный номер</li>
+            <li><code>experience_years</code> — стаж</li>
+            <li><code>category</code> — категория</li>
+            <li><code>address</code> — адрес</li>
+            <li><code>birth_year</code> — год рождения</li>
+            <li><code>crew_id</code> — идентификатор экипажа</li>
+        </ul>
+
+        <h3>Trip</h3>
+        <p>Хранит сведения о выполненных рейсах.</p>
+        <ul>
+            <li><code>trip_id</code> — идентификатор рейса</li>
+            <li><code>departure_date</code> — дата отбытия</li>
+            <li><code>arrival_date</code> — дата прибытия</li>
+            <li><code>passenger_count</code> — количество пассажиров</li>
+            <li><code>ticket_price</code> — стоимость билета</li>
+            <li><code>route_id</code> — идентификатор маршрута</li>
+            <li><code>bus_id</code> — идентификатор автобуса</li>
+        </ul>
+
+        <h3>CrewPayments</h3>
+        <p>Хранит информацию о начислениях экипажам за определённый период.</p>
+        <ul>
+            <li><code>payment_id</code> — идентификатор записи</li>
+            <li><code>crew_id</code> — идентификатор экипажа</li>
+            <li><code>period_start</code> — начало периода</li>
+            <li><code>period_end</code> — конец периода</li>
+            <li><code>percent_rate</code> — процент начисления</li>
+            <li><code>total_amount</code> — сумма начислений</li>
+            <li><code>calc_date</code> — дата расчёта</li>
+        </ul>
+
+        <h3>User</h3>
+        <p>Хранит данные пользователей системы.</p>
+        <ul>
+            <li><code>user_id</code> — идентификатор пользователя</li>
+            <li><code>login</code> — логин</li>
+            <li><code>password</code> — пароль</li>
+            <li><code>role</code> — роль пользователя</li>
+            <li><code>crew_member_id</code> — ссылка на члена экипажа</li>
+        </ul>
+    </section>
+
+    <section class="db-card">
+        <h2>Связи между таблицами</h2>
+        <ul>
+            <li>Один <strong>маршрут</strong> может использоваться во многих <strong>рейсах</strong>.</li>
+            <li>Один <strong>автобус</strong> может участвовать во многих <strong>рейсах</strong>.</li>
+            <li>Один <strong>экипаж</strong> закреплен за одним <strong>автобусом</strong>.</li>
+            <li>Один <strong>экипаж</strong> состоит не более чем из 3 <strong>членов экипажа</strong>.</li>
+            <li>Один <strong>рейс</strong> связан с одним <strong>маршрутом</strong> и одним <strong>автобусом</strong>.</li>
+            <li>Один пользователь с ролью <code>crew</code> связан с одним <strong>членом экипажа</strong>.</li>
+        </ul>
+    </section>
+
+    <section class="db-card">
+        <h2>Ограничения целостности данных</h2>
+        <ul>
+            <li>Первичные ключи <code>PRIMARY KEY</code> для уникальной идентификации записей.</li>
+            <li>Внешние ключи <code>FOREIGN KEY</code> для обеспечения связей между таблицами.</li>
+            <li>Ограничения <code>UNIQUE</code> для предотвращения дублирования данных.</li>
+            <li>Ограничения <code>CHECK</code> для проверки корректности значений.</li>
+        </ul>
+
+        <p><strong>Дополнительно используются триггеры:</strong></p>
+        <ul>
+            <li><code>check_crew_member_limit</code> — ограничивает количество членов экипажа.</li>
+            <li><code>validate_trip_before_insert</code> — проверяет корректность данных при добавлении рейса.</li>
+        </ul>
+    </section>
+
+    <section class="db-card">
+        <h2>Реализация бизнес-логики</h2>
+        <p>
+            Так как в SQLite отсутствует поддержка хранимых процедур, необходимая функциональность
+            реализована через триггеры и SQL-запросы.
+        </p>
+        <ul>
+            <li>Проверка данных при добавлении рейсов — с помощью триггеров.</li>
+            <li>Расчёт начислений экипажам — с использованием <code>INSERT INTO ... SELECT ...</code>
+                с сохранением результата в таблицу <code>crew_payments</code>.</li>
+        </ul>
+    </section>
+
+    <section class="db-card">
+        <h2>Схема базы данных</h2>
+        <img src="images/database-schema.png" alt="Схема базы данных Tourist Bureau" class="schema-image">
+    </section>
+
+    <section class="db-card">
+        <h2>Файлы базы данных</h2>
+        <p>
+            <a class="link-button" href="https://github.com/Polina707-lab/tpmp-lab4-work/blob/main/sql/init.sql" target="_blank">
+                Открыть SQL-скрипт
+            </a>
+        </p>
+    </section>
+
+    <section>
+        <h2>Вывод</h2>
+        <div class="note">
+            Разработанная схема базы данных отражает структуру предметной области,
+            обеспечивает целостность данных и позволяет выполнять аналитические запросы,
+            включая расчёт доходов и формирование отчётов.
+        </div>
+    </section>
+
+</div>
+
+<div class="footer">
+    <p>ФПМИ БГУ — Лабораторная работа №4</p>
+</div>
+
+</body>
+</html>
