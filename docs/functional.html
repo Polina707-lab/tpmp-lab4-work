@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Функциональные требования — Туристическое бюро</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: white;
+            padding: 36px 40px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        nav {
+            background: white;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        .nav-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-grid a {
+            text-decoration: none;
+            color: #1e3a8a;
+            background: #eff6ff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .nav-grid a.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        h3 {
+            margin-top: 20px;
+        }
+
+        .note {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Функциональные требования</h1>
+</header>
+
+<nav>
+    <div class="nav-grid">
+        <a href="index.html">Главная</a>
+        <a href="glossary.html">Глоссарий</a>
+        <a href="functional.html" class="active">Функциональные требования</a>
+        <a href="specification.html">Спецификация</a>
+        <a href="additional.html">Доп. спецификация</a>
+        <a href="database.html">Схема БД</a>
+        <a href="presentation.html">Презентация</a>
+        <a href="repository.html">Репозиторий</a>
+        <a href="training.html">Учебные репозитории</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="note">
+        Система «Туристическое бюро» предназначена для управления маршрутами,
+        рейсами, автобусами и экипажами, а также для формирования отчетов.
+    </div>
+
+    <h2>Акторы</h2>
+
+    <div class="card">
+        <strong>Администратор</strong><br>
+        Полный доступ к системе.
+        <ul>
+            <li>управление рейсами</li>
+            <li>управление автобусами</li>
+            <li>управление маршрутами</li>
+            <li>формирование отчетов</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <strong>Член экипажа</strong><br>
+        Ограниченный доступ.
+        <ul>
+            <li>просмотр личных данных</li>
+            <li>просмотр начислений</li>
+        </ul>
+    </div>
+
+    <h2>Диаграмма вариантов использования</h2>
+
+    <img src="images/use-case.png" alt="Use Case Diagram">
+
+    <h2>Варианты использования</h2>
+
+    <div class="card">
+        <strong>Вход в систему</strong><br>
+        Пользователь вводит логин и пароль.
+    </div>
+
+    <div class="card">
+        <strong>Добавление рейса</strong><br>
+        Администратор создаёт новый рейс.
+    </div>
+
+    <div class="card">
+        <strong>Редактирование рейса</strong><br>
+        Изменение параметров рейса.
+    </div>
+
+    <div class="card">
+        <strong>Удаление рейса</strong><br>
+        Удаление рейса из системы.
+    </div>
+
+    <div class="card">
+        <strong>Просмотр отчетов</strong><br>
+        Формирование аналитики.
+    </div>
+
+    <h2>Связи</h2>
+
+    <div class="note">
+        Все функции системы доступны только после успешной аутентификации пользователя.
+    </div>
+
+</div>
+
+<div class="footer">
+    <p>ФПМИ БГУ — Лабораторная работа №4</p>
+</div>
+
+</body>
+</html>
