@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Спецификация проекта — Туристическое бюро</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: #ffffff;
+            padding: 36px 40px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.18);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+
+        nav {
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        .nav-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-grid a {
+            text-decoration: none;
+            color: #1e3a8a;
+            background: #eff6ff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .nav-grid a:hover {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .nav-grid a.active {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #111827;
+        }
+
+        h3 {
+            margin-top: 26px;
+            margin-bottom: 10px;
+            color: #1f2937;
+        }
+
+        h4 {
+            margin-top: 18px;
+            margin-bottom: 8px;
+            color: #1e3a8a;
+        }
+
+        p {
+            margin-bottom: 14px;
+        }
+
+        ul {
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .note {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            color: #1e3a8a;
+        }
+
+        .diagram-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .diagram-card img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 18px auto;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            background: #ffffff;
+        }
+
+        .info-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 14px;
+            }
+
+            header {
+                padding: 28px 24px;
+            }
+
+            header h1 {
+                font-size: 30px;
+            }
+
+            .container {
+                padding: 24px;
+            }
+
+            .nav-grid a {
+                width: 100%;
+                box-sizing: border-box;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Спецификация проекта</h1>
+</header>
+
+<nav>
+    <div class="nav-grid">
+        <a href="index.html">Главная</a>
+        <a href="glossary.html">Глоссарий</a>
+        <a href="functional.html">Функциональные требования</a>
+        <a href="specification.html" class="active">Спецификация</a>
+        <a href="additional.html">Доп. спецификация</a>
+        <a href="database.html">Схема БД</a>
+        <a href="presentation.html">Презентация</a>
+        <a href="repository.html">Репозиторий</a>
+        <a href="training.html">Учебные репозитории</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="note">
+        Система «Туристическое бюро» предназначена для автоматизации управления
+        экскурсионными маршрутами, автобусами, экипажами и рейсами.
+        Приложение обеспечивает хранение данных, выполнение операций над ними
+        и формирование отчётов.
+    </div>
+
+    <section class="diagram-card">
+        <h2>Диаграмма классов</h2>
+        <p>
+            Диаграмма классов отражает архитектуру системы и взаимодействие между
+            пользовательским интерфейсом, сервисным слоем, базой данных и структурами данных.
+        </p>
+
+        <img src="images/class-diagram.png" alt="Диаграмма классов">
+
+        <h3>Основные классы</h3>
+
+        <div class="info-card">
+            <h4>Управляющий уровень</h4>
+            <ul>
+                <li><strong>Menu</strong> — отвечает за взаимодействие с пользователем, обработку ввода и вызов сервисов в зависимости от роли пользователя.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h4>Сервисный уровень</h4>
+            <ul>
+                <li><strong>AuthService</strong> — выполняет аутентификацию пользователей и формирует сессию пользователя.</li>
+                <li><strong>TripService</strong> — управляет рейсами.</li>
+                <li><strong>BusService</strong> — управляет автобусами.</li>
+                <li><strong>RouteService</strong> — управляет маршрутами.</li>
+                <li><strong>ReportService</strong> — формирует отчёты и выполняет аналитические запросы.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h4>Уровень доступа к данным</h4>
+            <ul>
+                <li><strong>Database</strong> — обеспечивает подключение к базе данных SQLite, выполнение SQL-запросов и управление транзакциями.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <h4>Структуры данных</h4>
+            <ul>
+                <li><strong>Trip</strong> — рейс.</li>
+                <li><strong>Route</strong> — маршрут.</li>
+                <li><strong>Bus</strong> — автобус.</li>
+                <li><strong>UserSession</strong> — информация о текущей сессии пользователя.</li>
+            </ul>
+        </div>
+
+        <h3>Связи между классами</h3>
+        <ul>
+            <li><strong>Menu</strong> использует сервисы: AuthService, TripService, BusService, RouteService, ReportService.</li>
+            <li>Все сервисы используют <strong>Database</strong> для работы с базой данных.</li>
+            <li><strong>AuthService</strong> формирует объект <strong>UserSession</strong>, который затем используется в <strong>Menu</strong>.</li>
+            <li>Сервисные классы логически работают со структурами данных предметной области.</li>
+        </ul>
+
+        <h3>Особенности архитектуры</h3>
+        <ul>
+            <li>Система построена по принципу разделения слоёв: представление, сервисы, доступ к данным и модели.</li>
+            <li>Доступ к базе данных осуществляется только через сервисы.</li>
+            <li>Связи между сущностями реализованы на уровне базы данных и SQL-запросов.</li>
+        </ul>
+    </section>
+
+    <section class="diagram-card">
+        <h2>Диаграмма деятельности</h2>
+
+        <img src="images/activity-diagram.png" alt="Диаграмма деятельности">
+
+        <p>
+            Диаграмма деятельности отражает процесс формирования и вывода отчёта по автобусам за указанный период.
+        </p>
+
+        <h3>Основные этапы</h3>
+        <ol>
+            <li>Пользователь задаёт параметры отчёта.</li>
+            <li>Система проверяет корректность введённых данных.</li>
+            <li>При ошибке выводится сообщение, и процесс завершается.</li>
+            <li>При корректных данных формируется запрос к базе данных.</li>
+            <li>База данных возвращает данные, система вычисляет статистику и формирует текстовый отчёт.</li>
+            <li>Результат выводится пользователю.</li>
+        </ol>
+    </section>
+
+    <section class="diagram-card">
+        <h2>Диаграмма последовательности</h2>
+
+        <img src="images/sequence-diagram.png" alt="Диаграмма последовательности">
+
+        <p>
+            Диаграмма последовательности показывает взаимодействие компонентов системы
+            при формировании и выводе отчёта по автобусам за указанный период.
+        </p>
+
+        <h3>Основной сценарий</h3>
+        <ul>
+            <li>Пользователь инициирует запрос на формирование отчёта.</li>
+            <li><strong>Menu</strong> принимает запрос и проверяет корректность параметров.</li>
+            <li><strong>Menu</strong> вызывает метод <code>printBusSummary(...)</code> сервиса <strong>ReportService</strong>.</li>
+            <li><strong>ReportService</strong> формирует SQL-запрос и обращается к <strong>Database</strong>.</li>
+            <li>База данных возвращает результат запроса.</li>
+            <li><strong>ReportService</strong> обрабатывает данные и формирует текстовый отчёт.</li>
+            <li>Результат возвращается в <strong>Menu</strong> и выводится пользователю.</li>
+        </ul>
+
+        <h3>Альтернативный сценарий</h3>
+        <ul>
+            <li>При некорректных параметрах <strong>Menu</strong> не обращается к сервису.</li>
+            <li>Пользователю выводится сообщение об ошибке.</li>
+        </ul>
+    </section>
+
+    <section class="diagram-card">
+        <h2>Диаграмма компонентов</h2>
+
+        <img src="images/component-diagram.png" alt="Диаграмма компонентов">
+
+        <p>
+            Диаграмма компонентов отражает архитектуру системы и взаимодействие между её основными частями.
+        </p>
+
+        <h3>Основные компоненты</h3>
+        <ul>
+            <li><strong>Menu</strong> — пользовательский интерфейс.</li>
+            <li><strong>AuthService</strong> — аутентификация пользователей.</li>
+            <li><strong>TripService</strong> — управление рейсами.</li>
+            <li><strong>RouteService</strong> — управление маршрутами.</li>
+            <li><strong>BusService</strong> — управление автобусами.</li>
+            <li><strong>ReportService</strong> — формирование отчётов.</li>
+            <li><strong>Database</strong> — доступ к базе данных и выполнение SQL-запросов.</li>
+            <li><strong>User</strong> — внешний актор.</li>
+        </ul>
+
+        <h3>Общая логика работы</h3>
+        <ol>
+            <li>Пользователь взаимодействует с компонентом <strong>Menu</strong>.</li>
+            <li><strong>Menu</strong> вызывает соответствующий сервис.</li>
+            <li>Сервис обрабатывает запрос и при необходимости обращается к <strong>Database</strong>.</li>
+            <li>Результат возвращается пользователю через <strong>Menu</strong>.</li>
+        </ol>
+    </section>
+
+    <section class="diagram-card">
+        <h2>Диаграмма развертывания</h2>
+
+        <img src="images/deployment-diagram.png" alt="Диаграмма развертывания">
+
+        <p>
+            Диаграмма развертывания показывает физическое размещение компонентов системы
+            и их взаимодействие в процессе выполнения.
+        </p>
+
+        <h3>Основные элементы</h3>
+        <ul>
+            <li><strong>TouristBureauServer</strong> — сервер, на котором выполняется приложение.</li>
+            <li><strong>TouristBureauApp</strong> — основное приложение с бизнес-логикой системы.</li>
+            <li><strong>TouristBureauDB</strong> — база данных.</li>
+            <li>В составе приложения выделены модули: AuthService, TripService, RouteService, BusService, ReportService.</li>
+        </ul>
+
+        <h3>Взаимодействие компонентов</h3>
+        <ul>
+            <li>Все сервисы приложения взаимодействуют с базой данных через зависимость типа <strong>&lt;&lt;use&gt;&gt;</strong>.</li>
+            <li>Сервисы не взаимодействуют напрямую друг с другом, что обеспечивает разделение ответственности.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Вывод</h2>
+        <div class="note">
+            Разработанная спецификация описывает архитектуру системы, её структуру и поведение.
+            UML-диаграммы наглядно показывают взаимодействие компонентов и служат основой
+            для дальнейшей реализации проекта.
+        </div>
+    </section>
+
+</div>
+
+<div class="footer">
+    <p>ФПМИ БГУ — Лабораторная работа №4</p>
+</div>
+
+</body>
+</html>
