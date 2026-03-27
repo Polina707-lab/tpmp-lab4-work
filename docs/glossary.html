@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Глоссарий — Туристическое бюро</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: white;
+            padding: 36px 40px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+
+        nav {
+            background: white;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        .nav-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+       .nav-grid a {
+    text-decoration: none;
+    color: #1e3a8a;
+    background: #eff6ff;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.nav-grid a:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.nav-grid a.active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .note {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .term-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+        }
+
+        .term-card strong {
+            color: #1e3a8a;
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Глоссарий</h1>
+</header>
+
+<nav>
+    <div class="nav-grid">
+        <a href="index.html">Главная</a>
+        <a href="glossary.html" class="active">Глоссарий</a>
+        <a href="functional.html">Функциональные требования</a>
+        <a href="specification.html">Спецификация</a>
+        <a href="additional.html">Доп. спецификация</a>
+        <a href="database.html">Схема БД</a>
+        <a href="presentation.html">Презентация</a>
+        <a href="repository.html">Репозиторий</a>
+        <a href="training.html">Учебные репозитории</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="note">
+        Глоссарий содержит основные термины предметной области «Туристическое бюро»,
+        используемые в системе.
+    </div>
+
+    <div class="term-card">
+        <strong>Маршрут (Route)</strong><br>
+        Описание пути следования рейса с указанием начального и конечного пунктов.
+    </div>
+
+    <div class="term-card">
+        <strong>Рейс (Trip)</strong><br>
+        Конкретная поездка по маршруту с заданными датами, количеством пассажиров и стоимостью билета.
+    </div>
+
+    <div class="term-card">
+        <strong>Автобус (Bus)</strong><br>
+        Транспортное средство, используемое для выполнения рейсов.
+    </div>
+
+    <div class="term-card">
+        <strong>База данных (Database)</strong><br>
+        Компонент системы для хранения и обработки данных.
+    </div>
+
+    <div class="term-card">
+        <strong>Пользователь (User)</strong><br>
+        Субъект, взаимодействующий с системой с определёнными правами доступа.
+    </div>
+
+    <div class="term-card">
+        <strong>Администратор</strong><br>
+        Пользователь с полным доступом к системе.
+    </div>
+
+    <div class="term-card">
+        <strong>Член экипажа</strong><br>
+        Пользователь с ограниченными правами доступа.
+    </div>
+
+    <div class="term-card">
+        <strong>Сессия пользователя (UserSession)</strong><br>
+        Объект с данными текущего пользователя.
+    </div>
+
+    <div class="term-card">
+        <strong>Аутентификация (AuthService)</strong><br>
+        Процесс проверки логина и пароля пользователя.
+    </div>
+
+    <div class="term-card">
+        <strong>Сервис (Service)</strong><br>
+        Компонент, реализующий бизнес-логику системы.
+    </div>
+
+    <div class="term-card">
+        <strong>Отчет</strong><br>
+        Результат обработки данных системой.
+    </div>
+
+    <div class="term-card">
+        <strong>Параметры отчета</strong><br>
+        Данные, вводимые пользователем для формирования отчета.
+    </div>
+
+    <div class="term-card">
+        <strong>Статистика</strong><br>
+        Результат вычислений на основе данных рейсов.
+    </div>
+
+    <div class="term-card">
+        <strong>Стоимость билета</strong><br>
+        Цена поездки для одного пассажира.
+    </div>
+
+    <div class="term-card">
+        <strong>Доход экипажа</strong><br>
+        Часть дохода от рейса, рассчитываемая системой.
+    </div>
+
+</div>
+
+<div class="footer">
+    <p>ФПМИ БГУ — Лабораторная работа №4</p>
+</div>
+
+</body>
+</html>
