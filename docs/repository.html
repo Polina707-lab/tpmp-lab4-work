@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Репозитории — Туристическое бюро</title>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            color: #ffffff;
+            padding: 36px 40px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.18);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+
+        nav {
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        .nav-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-grid a {
+            text-decoration: none;
+            color: #1e3a8a;
+            background: #eff6ff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .nav-grid a:hover {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .nav-grid a.active {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #111827;
+        }
+
+        .note {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            color: #1e3a8a;
+        }
+
+        .repo-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .repo-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #1e3a8a;
+        }
+
+        .repo-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #ffffff;
+            background: #2563eb;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .repo-link:hover {
+            background: #1d4ed8;
+        }
+
+        .footer {
+            margin-top: 24px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-grid a {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Репозитории проекта</h1>
+</header>
+
+<nav>
+    <div class="nav-grid">
+        <a href="index.html">Главная</a>
+        <a href="glossary.html">Глоссарий</a>
+        <a href="functional.html">Функциональные требования</a>
+        <a href="specification.html">Спецификация</a>
+        <a href="additional.html">Доп. спецификация</a>
+        <a href="database.html">Схема БД</a>
+        <a href="presentation.html">Презентация</a>
+        <a href="repository.html" class="active">Репозиторий</a>
+        <a href="training.html">Учебные репозитории</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="note">
+        На данной странице представлены основные ресурсы проекта: исходный код,
+        документация и инструменты управления разработкой.
+    </div>
+
+    <div class="repo-card">
+        <h3>Репозиторий с кодом</h3>
+        <p>Содержит исходный код приложения, систему сборки, тесты и CI.</p>
+        <a class="repo-link" href="https://github.com/Polina707-lab/tpmp-lab4-work" target="_blank">
+            Открыть репозиторий
+        </a>
+    </div>
+
+    <div class="repo-card">
+        <h3>Репозиторий документации</h3>
+        <p>Содержит Wiki с описанием проекта, требованиями и UML-диаграммами.</p>
+        <a class="repo-link" href="https://github.com/fpmi-tpmp2026/tpmp-gr11a-lab4-shamruk-scheglov-team" target="_blank">
+            Открыть репозиторий
+        </a>
+    </div>
+
+    <div class="repo-card">
+        <h3>Документация (Wiki)</h3>
+        <p>Полная документация проекта с описанием требований и архитектуры.</p>
+        <a class="repo-link" href="https://github.com/fpmi-tpmp2026/tpmp-gr11a-lab4-shamruk-scheglov-team/wiki" target="_blank">
+            Открыть Wiki
+        </a>
+    </div>
+
+    <div class="repo-card">
+        <h3>Управление проектом (Trello)</h3>
+        <p>Kanban-доска, используемая для организации задач и работы команды.</p>
+        <a class="repo-link" href="https://trello.com/b/XD0kSFX8/tourist-bureau-project-lab-4" target="_blank">
+            Открыть доску
+        </a>
+    </div>
+
+</div>
+
+<div class="footer">
+    <p>ФПМИ БГУ — Лабораторная работа №4</p>
+</div>
+
+</body>
+</html>
