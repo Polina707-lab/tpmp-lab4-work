@@ -17,3 +17,6 @@ cmake_install.cmake
 .vscode/
 .idea/
 *.orig
+*.db
+build/
+bin/
