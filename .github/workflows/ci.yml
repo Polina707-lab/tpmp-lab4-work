@@ -31,22 +31,27 @@ jobs:
         run: cmake -S . -B build -DENABLE_COVERAGE=ON
 
       - name: Build project
-        run: cmake --build build --config Debug
+        run: cmake --build build
 
       - name: Run tests
         run: ctest --test-dir build --output-on-failure
 
       - name: Capture coverage
         run: |
-          lcov --capture --directory build --output-file coverage.info
+          lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch
+
           lcov --remove coverage.info \
             '/usr/*' \
             '*/tests/*' \
             '*/_deps/*' \
             '*/main.cpp' \
             '*/menu.cpp' \
+            --ignore-errors mismatch \
             --output-file coverage.info
-          genhtml coverage.info --output-directory coverage_html
+
+          genhtml coverage.info \
+            --ignore-errors mismatch \
+            --output-directory coverage_html
 
       - name: Upload coverage HTML report
         uses: actions/upload-artifact@v4
