@@ -25,6 +25,9 @@ TEST_F(AuthServiceTest, AdminLoginSuccess) {
 
     EXPECT_TRUE(session.authenticated);
     EXPECT_EQ(session.role, "admin");
+    EXPECT_EQ(session.login, "admin");
+    EXPECT_GT(session.userId, 0);
+    EXPECT_EQ(session.crewMemberId, -1);
 }
 
 TEST_F(AuthServiceTest, CrewLoginSuccess) {
@@ -33,21 +36,9 @@ TEST_F(AuthServiceTest, CrewLoginSuccess) {
 
     EXPECT_TRUE(session.authenticated);
     EXPECT_EQ(session.role, "crew");
+    EXPECT_EQ(session.login, "ivanov");
     EXPECT_EQ(session.crewMemberId, 1);
-}
-
-TEST_F(AuthServiceTest, LoginFailsWithWrongPassword) {
-    AuthService auth(db);
-    UserSession session = auth.login("admin", "wrong_password");
-
-    EXPECT_FALSE(session.authenticated);
-}
-
-TEST_F(AuthServiceTest, LoginFailsWithNonExistingUser) {
-    AuthService auth(db);
-    UserSession session = auth.login("nonexistent", "1234");
-
-    EXPECT_FALSE(session.authenticated);
+    EXPECT_GT(session.userId, 0);
 }
 
 TEST_F(AuthServiceTest, CrewLoginHasValidUserId) {
@@ -57,6 +48,28 @@ TEST_F(AuthServiceTest, CrewLoginHasValidUserId) {
     EXPECT_TRUE(session.userId > 0);
 }
 
+TEST_F(AuthServiceTest, LoginFailsWithWrongPassword) {
+    AuthService auth(db);
+    UserSession session = auth.login("admin", "wrong_password");
+
+    EXPECT_FALSE(session.authenticated);
+    EXPECT_EQ(session.userId, -1);
+    EXPECT_EQ(session.role, "");
+    EXPECT_EQ(session.login, "");
+    EXPECT_EQ(session.crewMemberId, -1);
+}
+
+TEST_F(AuthServiceTest, LoginFailsWithNonExistingUser) {
+    AuthService auth(db);
+    UserSession session = auth.login("nonexistent", "1234");
+
+    EXPECT_FALSE(session.authenticated);
+    EXPECT_EQ(session.userId, -1);
+    EXPECT_EQ(session.role, "");
+    EXPECT_EQ(session.login, "");
+    EXPECT_EQ(session.crewMemberId, -1);
+}
+
 TEST_F(AuthServiceTest, FailedLoginHasDefaultValues) {
     AuthService auth(db);
     UserSession session = auth.login("wrong", "wrong");
@@ -64,4 +77,57 @@ TEST_F(AuthServiceTest, FailedLoginHasDefaultValues) {
     EXPECT_FALSE(session.authenticated);
     EXPECT_EQ(session.userId, -1);
     EXPECT_EQ(session.crewMemberId, -1);
+    EXPECT_EQ(session.login, "");
+    EXPECT_EQ(session.role, "");
+}
+
+TEST_F(AuthServiceTest, LoginFailsWithEmptyLogin) {
+    AuthService auth(db);
+    UserSession session = auth.login("", "1234");
+
+    EXPECT_FALSE(session.authenticated);
+    EXPECT_EQ(session.userId, -1);
+    EXPECT_EQ(session.login, "");
+    EXPECT_EQ(session.role, "");
+    EXPECT_EQ(session.crewMemberId, -1);
+}
+
+TEST_F(AuthServiceTest, LoginFailsWithEmptyPassword) {
+    AuthService auth(db);
+    UserSession session = auth.login("admin", "");
+
+    EXPECT_FALSE(session.authenticated);
+    EXPECT_EQ(session.userId, -1);
+    EXPECT_EQ(session.login, "");
+    EXPECT_EQ(session.role, "");
+    EXPECT_EQ(session.crewMemberId, -1);
+}
+
+TEST_F(AuthServiceTest, LoginFailsWithBothCredentialsEmpty) {
+    AuthService auth(db);
+    UserSession session = auth.login("", "");
+
+    EXPECT_FALSE(session.authenticated);
+    EXPECT_EQ(session.userId, -1);
+    EXPECT_EQ(session.login, "");
+    EXPECT_EQ(session.role, "");
+    EXPECT_EQ(session.crewMemberId, -1);
+}
+
+TEST_F(AuthServiceTest, LoginIsCaseSensitive) {
+    AuthService auth(db);
+    UserSession session = auth.login("Admin", "admin123");
+
+    EXPECT_FALSE(session.authenticated);
+    EXPECT_EQ(session.userId, -1);
+}
+
+TEST_F(AuthServiceTest, CrewLoginReturnsCorrectLoginValue) {
+    AuthService auth(db);
+    UserSession session = auth.login("petrov", "1234");
+
+    EXPECT_TRUE(session.authenticated);
+    EXPECT_EQ(session.login, "petrov");
+    EXPECT_EQ(session.role, "crew");
+    EXPECT_EQ(session.crewMemberId, 2);
 }
