@@ -4,6 +4,7 @@
 #include <sqlite3.h>
 #include <string>
 #include <cstdio>
+#include <functional>
 
 class TripServiceTest : public ::testing::Test {
 protected:
@@ -32,6 +33,38 @@ protected:
 
         sqlite3_finalize(stmt);
         return count;
+    }
+
+    int getLatestTripIdByData(const std::string& departureDate,
+                              const std::string& arrivalDate,
+                              int passengerCount,
+                              double ticketPrice) {
+        const char* sql =
+            "SELECT trip_id FROM trips "
+            "WHERE departure_date = ? AND arrival_date = ? "
+            "AND passenger_count = ? AND ticket_price = ? "
+            "ORDER BY trip_id DESC LIMIT 1;";
+
+        sqlite3_stmt* stmt = nullptr;
+        sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, departureDate.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, arrivalDate.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmt, 3, passengerCount);
+        sqlite3_bind_double(stmt, 4, ticketPrice);
+
+        int tripId = -1;
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            tripId = sqlite3_column_int(stmt, 0);
+        }
+
+        sqlite3_finalize(stmt);
+        return tripId;
+    }
+
+    std::string captureOutput(const std::function<void()>& func) {
+        testing::internal::CaptureStdout();
+        func();
+        return testing::internal::GetCapturedStdout();
     }
 };
 
@@ -68,28 +101,40 @@ TEST_F(TripServiceTest, AddTripFailsWhenArrivalBeforeDeparture) {
     EXPECT_FALSE(result);
 }
 
+TEST_F(TripServiceTest, AddTripFailsWithZeroPassengers) {
+    TripService service(db);
+
+    bool result = service.addTrip(1, 1, "2024-11-05", "2024-11-05", 0, 1500.0);
+    EXPECT_FALSE(result);
+}
+
+TEST_F(TripServiceTest, AddTripFailsWithNegativeTicketPrice) {
+    TripService service(db);
+
+    bool result = service.addTrip(1, 1, "2024-11-05", "2024-11-05", 10, -10.0);
+    EXPECT_FALSE(result);
+}
+
 TEST_F(TripServiceTest, DeleteTripSuccess) {
     TripService service(db);
 
     ASSERT_TRUE(service.addTrip(1, 1, "2024-11-03", "2024-11-03", 11, 1600.0));
-
-    const char* sql =
-        "SELECT trip_id FROM trips "
-        "WHERE departure_date = '2024-11-03' AND arrival_date = '2024-11-03' "
-        "AND passenger_count = 11 AND ticket_price = 1600.0 "
-        "ORDER BY trip_id DESC LIMIT 1;";
-
-    sqlite3_stmt* stmt = nullptr;
-    sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nullptr);
-
-    int tripId = -1;
-    if (sqlite3_step(stmt) == SQLITE_ROW) {
-        tripId = sqlite3_column_int(stmt, 0);
-    }
-    sqlite3_finalize(stmt);
+    int tripId = getLatestTripIdByData("2024-11-03", "2024-11-03", 11, 1600.0);
 
     ASSERT_NE(tripId, -1);
     EXPECT_TRUE(service.deleteTrip(tripId));
+}
+
+TEST_F(TripServiceTest, DeleteTripRemovesRecordFromDatabase) {
+    TripService service(db);
+
+    ASSERT_TRUE(service.addTrip(1, 1, "2024-11-04", "2024-11-04", 13, 1650.0));
+    int tripId = getLatestTripIdByData("2024-11-04", "2024-11-04", 13, 1650.0);
+
+    ASSERT_NE(tripId, -1);
+    ASSERT_TRUE(service.deleteTrip(tripId));
+
+    EXPECT_EQ(getLatestTripIdByData("2024-11-04", "2024-11-04", 13, 1650.0), -1);
 }
 
 TEST_F(TripServiceTest, DeleteTripFailsForInvalidId) {
@@ -102,21 +147,7 @@ TEST_F(TripServiceTest, UpdateTripSuccess) {
     TripService service(db);
 
     ASSERT_TRUE(service.addTrip(1, 1, "2024-11-10", "2024-11-10", 12, 1700.0));
-
-    const char* sql =
-        "SELECT trip_id FROM trips "
-        "WHERE departure_date = '2024-11-10' AND arrival_date = '2024-11-10' "
-        "AND passenger_count = 12 AND ticket_price = 1700.0 "
-        "ORDER BY trip_id DESC LIMIT 1;";
-
-    sqlite3_stmt* stmt = nullptr;
-    sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nullptr);
-
-    int tripId = -1;
-    if (sqlite3_step(stmt) == SQLITE_ROW) {
-        tripId = sqlite3_column_int(stmt, 0);
-    }
-    sqlite3_finalize(stmt);
+    int tripId = getLatestTripIdByData("2024-11-10", "2024-11-10", 12, 1700.0);
 
     ASSERT_NE(tripId, -1);
 
@@ -124,9 +155,94 @@ TEST_F(TripServiceTest, UpdateTripSuccess) {
     EXPECT_TRUE(result);
 }
 
+TEST_F(TripServiceTest, UpdateTripChangesStoredData) {
+    TripService service(db);
+
+    ASSERT_TRUE(service.addTrip(1, 1, "2024-11-12", "2024-11-12", 14, 1750.0));
+    int tripId = getLatestTripIdByData("2024-11-12", "2024-11-12", 14, 1750.0);
+
+    ASSERT_NE(tripId, -1);
+    ASSERT_TRUE(service.updateTrip(tripId, 2, 2, "2024-11-13", "2024-11-13", 21, 1850.0));
+
+    const char* sql =
+        "SELECT bus_id, route_id, departure_date, arrival_date, passenger_count, ticket_price "
+        "FROM trips WHERE trip_id = ?;";
+    sqlite3_stmt* stmt = nullptr;
+    sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nullptr);
+    sqlite3_bind_int(stmt, 1, tripId);
+
+    ASSERT_EQ(sqlite3_step(stmt), SQLITE_ROW);
+
+    EXPECT_EQ(sqlite3_column_int(stmt, 0), 2);
+    EXPECT_EQ(sqlite3_column_int(stmt, 1), 2);
+    EXPECT_EQ(std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2))), "2024-11-13");
+    EXPECT_EQ(std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3))), "2024-11-13");
+    EXPECT_EQ(sqlite3_column_int(stmt, 4), 21);
+    EXPECT_EQ(sqlite3_column_double(stmt, 5), 1850.0);
+
+    sqlite3_finalize(stmt);
+}
+
 TEST_F(TripServiceTest, UpdateTripFailsForInvalidId) {
     TripService service(db);
 
     bool result = service.updateTrip(9999, 1, 1, "2024-11-11", "2024-11-11", 20, 1800.0);
     EXPECT_FALSE(result);
+}
+
+TEST_F(TripServiceTest, UpdateTripFailsForInvalidBus) {
+    TripService service(db);
+
+    ASSERT_TRUE(service.addTrip(1, 1, "2024-11-14", "2024-11-14", 15, 1900.0));
+    int tripId = getLatestTripIdByData("2024-11-14", "2024-11-14", 15, 1900.0);
+
+    ASSERT_NE(tripId, -1);
+
+    bool result = service.updateTrip(tripId, 999, 1, "2024-11-15", "2024-11-15", 16, 1950.0);
+    EXPECT_FALSE(result);
+}
+
+TEST_F(TripServiceTest, UpdateTripFailsForInvalidRoute) {
+    TripService service(db);
+
+    ASSERT_TRUE(service.addTrip(1, 1, "2024-11-16", "2024-11-16", 17, 2000.0));
+    int tripId = getLatestTripIdByData("2024-11-16", "2024-11-16", 17, 2000.0);
+
+    ASSERT_NE(tripId, -1);
+
+    bool result = service.updateTrip(tripId, 1, 999, "2024-11-17", "2024-11-17", 18, 2050.0);
+    EXPECT_FALSE(result);
+}
+
+TEST_F(TripServiceTest, UpdateTripFailsWhenArrivalBeforeDeparture) {
+    TripService service(db);
+
+    ASSERT_TRUE(service.addTrip(1, 1, "2024-11-18", "2024-11-18", 19, 2100.0));
+    int tripId = getLatestTripIdByData("2024-11-18", "2024-11-18", 19, 2100.0);
+
+    ASSERT_NE(tripId, -1);
+
+    bool result = service.updateTrip(tripId, 1, 1, "2024-11-20", "2024-11-19", 20, 2150.0);
+    EXPECT_FALSE(result);
+}
+
+TEST_F(TripServiceTest, PrintTripsByBusAndPeriodShowsTrips) {
+    TripService service(db);
+
+    std::string output = captureOutput([&]() {
+        service.printTripsByBusAndPeriod("A101", "2024-01-01", "2024-12-31");
+    });
+
+    EXPECT_NE(output.find("Рейсы автобуса A101"), std::string::npos);
+    EXPECT_NE(output.find("ID рейса"), std::string::npos);
+}
+
+TEST_F(TripServiceTest, PrintTripsByBusAndPeriodShowsNotFoundWhenNoTrips) {
+    TripService service(db);
+
+    std::string output = captureOutput([&]() {
+        service.printTripsByBusAndPeriod("A101", "2025-01-01", "2025-12-31");
+    });
+
+    EXPECT_NE(output.find("Данные не найдены"), std::string::npos);
 }
