@@ -4,6 +4,7 @@
 #include <sqlite3.h>
 #include <string>
 #include <cstdio>
+#include <functional>
 
 class RouteServiceTest : public ::testing::Test {
 protected:
@@ -33,6 +34,27 @@ protected:
         sqlite3_finalize(stmt);
         return count;
     }
+
+    int getRouteIdByName(const std::string& routeName) {
+        const char* sql = "SELECT route_id FROM routes WHERE route_name = ?;";
+        sqlite3_stmt* stmt = nullptr;
+        sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, routeName.c_str(), -1, SQLITE_TRANSIENT);
+
+        int routeId = -1;
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            routeId = sqlite3_column_int(stmt, 0);
+        }
+
+        sqlite3_finalize(stmt);
+        return routeId;
+    }
+
+    std::string captureOutput(const std::function<void()>& func) {
+        testing::internal::CaptureStdout();
+        func();
+        return testing::internal::GetCapturedStdout();
+    }
 };
 
 TEST_F(RouteServiceTest, AddRouteSuccess) {
@@ -54,25 +76,60 @@ TEST_F(RouteServiceTest, AddRouteFailsWithDuplicateName) {
     EXPECT_FALSE(result);
 }
 
+TEST_F(RouteServiceTest, AddRouteFailsWithZeroDistance) {
+    RouteService service(db);
+
+    bool result = service.addRoute("Нулевой маршрут", "Пункт А", "Пункт Б", 0.0);
+    EXPECT_FALSE(result);
+}
+
+TEST_F(RouteServiceTest, AddRouteFailsWithNegativeDistance) {
+    RouteService service(db);
+
+    bool result = service.addRoute("Отрицательный маршрут", "Пункт А", "Пункт Б", -10.0);
+    EXPECT_FALSE(result);
+}
+
 TEST_F(RouteServiceTest, UpdateRouteSuccess) {
     RouteService service(db);
 
     ASSERT_TRUE(service.addRoute("Маршрут для обновления", "A", "B", 50.0));
-
-    const char* sql = "SELECT route_id FROM routes WHERE route_name = 'Маршрут для обновления';";
-    sqlite3_stmt* stmt = nullptr;
-    sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nullptr);
-
-    int routeId = -1;
-    if (sqlite3_step(stmt) == SQLITE_ROW) {
-        routeId = sqlite3_column_int(stmt, 0);
-    }
-
-    sqlite3_finalize(stmt);
+    int routeId = getRouteIdByName("Маршрут для обновления");
     ASSERT_NE(routeId, -1);
 
     bool result = service.updateRoute(routeId, "Обновленный маршрут", "C", "D", 75.0);
     EXPECT_TRUE(result);
+}
+
+TEST_F(RouteServiceTest, UpdateRouteChangesStoredData) {
+    RouteService service(db);
+
+    ASSERT_TRUE(service.addRoute("Маршрут для проверки", "A", "B", 60.0));
+    int routeId = getRouteIdByName("Маршрут для проверки");
+    ASSERT_NE(routeId, -1);
+
+    ASSERT_TRUE(service.updateRoute(routeId, "Новый маршрут", "C", "D", 80.0));
+
+    const char* sql =
+        "SELECT route_name, start_point, end_point, distance_km "
+        "FROM routes WHERE route_id = ?;";
+    sqlite3_stmt* stmt = nullptr;
+    sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nullptr);
+    sqlite3_bind_int(stmt, 1, routeId);
+
+    ASSERT_EQ(sqlite3_step(stmt), SQLITE_ROW);
+
+    std::string routeName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+    std::string startPoint = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+    std::string endPoint = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+    double distanceKm = sqlite3_column_double(stmt, 3);
+
+    sqlite3_finalize(stmt);
+
+    EXPECT_EQ(routeName, "Новый маршрут");
+    EXPECT_EQ(startPoint, "C");
+    EXPECT_EQ(endPoint, "D");
+    EXPECT_EQ(distanceKm, 80.0);
 }
 
 TEST_F(RouteServiceTest, UpdateRouteFailsForInvalidId) {
@@ -82,28 +139,65 @@ TEST_F(RouteServiceTest, UpdateRouteFailsForInvalidId) {
     EXPECT_FALSE(result);
 }
 
+TEST_F(RouteServiceTest, UpdateRouteFailsWithDuplicateName) {
+    RouteService service(db);
+
+    ASSERT_TRUE(service.addRoute("Уникальный маршрут", "A", "B", 50.0));
+    int routeId = getRouteIdByName("Уникальный маршрут");
+    ASSERT_NE(routeId, -1);
+
+    bool result = service.updateRoute(routeId, "Золотое кольцо", "C", "D", 70.0);
+    EXPECT_FALSE(result);
+}
+
 TEST_F(RouteServiceTest, DeleteRouteSuccess) {
     RouteService service(db);
 
     ASSERT_TRUE(service.addRoute("Маршрут для удаления", "X", "Y", 90.0));
-
-    const char* sql = "SELECT route_id FROM routes WHERE route_name = 'Маршрут для удаления';";
-    sqlite3_stmt* stmt = nullptr;
-    sqlite3_prepare_v2(db.get(), sql, -1, &stmt, nullptr);
-
-    int routeId = -1;
-    if (sqlite3_step(stmt) == SQLITE_ROW) {
-        routeId = sqlite3_column_int(stmt, 0);
-    }
-
-    sqlite3_finalize(stmt);
+    int routeId = getRouteIdByName("Маршрут для удаления");
     ASSERT_NE(routeId, -1);
 
     EXPECT_TRUE(service.deleteRoute(routeId));
+}
+
+TEST_F(RouteServiceTest, DeleteRouteRemovesRecordFromDatabase) {
+    RouteService service(db);
+
+    ASSERT_TRUE(service.addRoute("Маршрут исчезнет", "X", "Y", 95.0));
+    int routeId = getRouteIdByName("Маршрут исчезнет");
+    ASSERT_NE(routeId, -1);
+
+    ASSERT_TRUE(service.deleteRoute(routeId));
+
+    EXPECT_EQ(getRouteIdByName("Маршрут исчезнет"), -1);
 }
 
 TEST_F(RouteServiceTest, DeleteRouteFailsForInvalidId) {
     RouteService service(db);
 
     EXPECT_FALSE(service.deleteRoute(9999));
+}
+
+TEST_F(RouteServiceTest, PrintAllRoutesShowsExistingRoutes) {
+    RouteService service(db);
+
+    std::string output = captureOutput([&]() {
+        service.printAllRoutes();
+    });
+
+    EXPECT_NE(output.find("Список маршрутов"), std::string::npos);
+    EXPECT_NE(output.find("Золотое кольцо"), std::string::npos);
+}
+
+TEST_F(RouteServiceTest, PrintAllRoutesShowsMessageWhenNoRoutesExist) {
+    ASSERT_TRUE(db.execute("DELETE FROM trips;"));
+    ASSERT_TRUE(db.execute("DELETE FROM routes;"));
+
+    RouteService service(db);
+
+    std::string output = captureOutput([&]() {
+        service.printAllRoutes();
+    });
+
+    EXPECT_NE(output.find("Маршруты не найдены"), std::string::npos);
 }
