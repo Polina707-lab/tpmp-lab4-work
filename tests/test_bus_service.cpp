@@ -197,6 +197,9 @@ TEST_F(BusServiceTest, PrintAllBusesShowsExistingBuses) {
 }
 
 TEST_F(BusServiceTest, PrintAllBusesShowsMessageWhenNoBusesExist) {
+    ASSERT_TRUE(db.execute("DELETE FROM trips;"));
+    ASSERT_TRUE(db.execute("DELETE FROM users;"));
+    ASSERT_TRUE(db.execute("DELETE FROM crew_members;"));
     ASSERT_TRUE(db.execute("DELETE FROM crews;"));
     ASSERT_TRUE(db.execute("DELETE FROM buses;"));
 
