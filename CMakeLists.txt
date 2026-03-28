@@ -10,6 +10,14 @@ find_package(SQLite3 REQUIRED)
 
 include_directories(includes)
 
+option(ENABLE_COVERAGE "Enable code coverage" OFF)
+
+if(ENABLE_COVERAGE)
+    message(STATUS "Coverage enabled")
+    add_compile_options(-O0 --coverage)
+    add_link_options(--coverage)
+endif()
+
 add_executable(app
     src/main.cpp
     src/database.cpp
